@@ -1,0 +1,30 @@
+FAIL src/__tests__/integration/trip.test.ts
+  ÔùÅ Test suite failed to run
+
+    src/controllers/AuthController.ts:9:66 - error TS2552: Cannot find name 'NextFunction'. Did you mean 'Function'?
+
+    9     public static async login(req: Request, res: Response, next: NextFunction): Promise<void> {
+                                                                       ~~~~~~~~~~~~
+
+      ../../node_modules/typescript/lib/lib.es5.d.ts:319:13
+        319 declare var Function: FunctionConstructor;
+                        ~~~~~~~~
+        'Function' is declared here.
+    src/controllers/AuthController.ts:13:27 - error TS2304: Cannot find name 'ValidationError'.
+
+    13                 throw new ValidationError('Email and password are required');
+                                 ~~~~~~~~~~~~~~~
+    src/controllers/AuthController.ts:18:27 - error TS2304: Cannot find name 'DomainError'.
+
+    18                 throw new DomainError('Invalid credentials', 401);
+                                 ~~~~~~~~~~~
+    src/controllers/AuthController.ts:23:27 - error TS2304: Cannot find name 'DomainError'.
+
+    23                 throw new DomainError('Invalid credentials', 401);
+                                 ~~~~~~~~~~~
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        4.65 s
+Ran all test suites matching src/__tests__/integration/trip.test.ts.

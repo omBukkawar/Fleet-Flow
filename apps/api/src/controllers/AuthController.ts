@@ -1,29 +1,27 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { UserService } from '../services/UserService';
 import jwt from 'jsonwebtoken';
+import { DomainError, ValidationError } from '../errors/DomainError';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-key-123';
 const JWT_EXPIRES_IN = '24h'; // Tokens expire in 24 hours
 
 export class AuthController {
-    public static async login(req: Request, res: Response): Promise<void> {
+    public static async login(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const { email, password } = req.body;
             if (!email || !password) {
-                res.status(400).json({ error: 'Email and password are required' });
-                return;
+                throw new ValidationError('Email and password are required');
             }
 
             const user = await UserService.findByEmail(email);
             if (!user) {
-                res.status(401).json({ error: 'Invalid credentials' });
-                return;
+                throw new DomainError('Invalid credentials', 401);
             }
 
             const isMatch = await UserService.verifyPassword(password, user.password);
             if (!isMatch) {
-                res.status(401).json({ error: 'Invalid credentials' });
-                return;
+                throw new DomainError('Invalid credentials', 401);
             }
 
             // Generate token (expires)
@@ -34,13 +32,11 @@ export class AuthController {
             );
 
             res.status(200).json({
-                message: 'Login successful',
                 token,
                 user: { id: user.id, email: user.email, role: user.role, name: user.name }
             });
         } catch (error) {
-            console.error('Login error:', error);
-            res.status(500).json({ error: 'Internal server error' });
+            next(error);
         }
     }
 }

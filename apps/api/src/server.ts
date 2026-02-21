@@ -5,6 +5,10 @@ import { PrismaClient, Role } from '@prisma/client';
 import { AuthController } from './controllers/AuthController';
 import { TripController, CreateTripSchema, CompleteTripSchema } from './controllers/TripController';
 import { AnalyticsController } from './controllers/AnalyticsController';
+import { VehicleController, CreateVehicleSchema, UpdateVehicleStatusSchema } from './controllers/VehicleController';
+import { DriverController, CreateDriverSchema } from './controllers/DriverController';
+import { MaintenanceController, CreateMaintenanceSchema, CompleteMaintenanceSchema } from './controllers/MaintenanceController';
+import { FuelController, CreateFuelLogSchema } from './controllers/FuelController';
 import { authenticate, authorize, AuthRequest } from './middleware/auth';
 import { validateRequest } from './middleware/validateRequest';
 
@@ -42,6 +46,24 @@ app.post('/api/trips', authenticate, authorize([Role.MANAGER, Role.DISPATCHER]),
 app.post('/api/trips/:id/dispatch', authenticate, authorize([Role.MANAGER, Role.DISPATCHER]), TripController.dispatchTrip);
 app.post('/api/trips/:id/complete', authenticate, authorize([Role.MANAGER, Role.DISPATCHER]), validateRequest(CompleteTripSchema), TripController.completeTrip);
 
+// Vehicle Routes
+app.get('/api/vehicles', authenticate, authorize([Role.ADMIN, Role.MANAGER, Role.DISPATCHER, Role.SAFETY_OFFICER]), VehicleController.getVehicles);
+app.get('/api/vehicles/:id', authenticate, authorize([Role.MANAGER, Role.DISPATCHER, Role.SAFETY_OFFICER]), VehicleController.getVehicleById);
+app.post('/api/vehicles', authenticate, authorize([Role.MANAGER]), validateRequest(CreateVehicleSchema), VehicleController.createVehicle);
+app.put('/api/vehicles/:id/status', authenticate, authorize([Role.MANAGER]), validateRequest(UpdateVehicleStatusSchema), VehicleController.updateStatus);
+
+// Driver Routes
+app.get('/api/drivers', authenticate, authorize([Role.ADMIN, Role.MANAGER, Role.DISPATCHER, Role.SAFETY_OFFICER]), DriverController.getDrivers);
+app.get('/api/drivers/:id', authenticate, authorize([Role.MANAGER, Role.DISPATCHER, Role.SAFETY_OFFICER]), DriverController.getDriverById);
+app.post('/api/drivers', authenticate, authorize([Role.MANAGER]), validateRequest(CreateDriverSchema), DriverController.createDriver);
+
+// Maintenance Routes
+app.post('/api/maintenance', authenticate, authorize([Role.MANAGER, Role.SAFETY_OFFICER]), validateRequest(CreateMaintenanceSchema), MaintenanceController.addService);
+app.post('/api/maintenance/:id/complete', authenticate, authorize([Role.MANAGER, Role.SAFETY_OFFICER]), validateRequest(CompleteMaintenanceSchema), MaintenanceController.completeService);
+
+// Fuel Routes
+app.post('/api/fuel', authenticate, authorize([Role.MANAGER, Role.FINANCIAL_ANALYST]), validateRequest(CreateFuelLogSchema), FuelController.addFuelLog);
+
 // Analytics Routes
 app.get('/api/analytics/kpis', authenticate, authorize([Role.MANAGER, Role.FINANCIAL_ANALYST]), AnalyticsController.getKPIs);
 app.get('/api/analytics/vehicles/:id', authenticate, authorize([Role.MANAGER, Role.FINANCIAL_ANALYST]), AnalyticsController.getVehicleMetrics);
@@ -58,6 +80,10 @@ app.get('/health', async (req: Request, res: Response) => {
         res.status(500).json({ status: 'unhealthy', database: 'disconnected', error: String(error) });
     }
 });
+
+// Error handler (must be last)
+import { errorHandler } from './middleware/errorHandler';
+app.use(errorHandler);
 
 if (process.env.NODE_ENV !== 'test') {
     app.listen(port, () => {

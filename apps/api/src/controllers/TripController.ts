@@ -23,10 +23,9 @@ export class TripController {
     public static async createTrip(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const trip = await TripService.createTrip(req.body);
-            res.status(201).json({ message: 'Trip created', trip });
+            res.status(201).json(trip);
         } catch (error) {
-            if (error instanceof DomainError) res.status(error.statusCode).json({ error: error.message });
-            else next(error);
+            next(error);
         }
     }
 
@@ -34,10 +33,9 @@ export class TripController {
         try {
             const { id } = req.params;
             const trip = await TripService.dispatchTrip(id);
-            res.status(200).json({ message: 'Trip dispatched', trip });
+            res.status(200).json(trip);
         } catch (error) {
-            if (error instanceof DomainError) res.status(error.statusCode).json({ error: error.message });
-            else next(error);
+            next(error);
         }
     }
 
@@ -46,10 +44,9 @@ export class TripController {
             const { id } = req.params;
             const { distanceKm } = req.body;
             const trip = await TripService.completeTrip(id, distanceKm);
-            res.status(200).json({ message: 'Trip completed', trip });
+            res.status(200).json(trip);
         } catch (error) {
-            if (error instanceof DomainError) res.status(error.statusCode).json({ error: error.message });
-            else next(error);
+            next(error);
         }
     }
 }

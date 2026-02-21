@@ -30,5 +30,15 @@ services:
       db:
         condition: service_healthy
 
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    container_name: fleet_frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+
 volumes:
   postgres_data:

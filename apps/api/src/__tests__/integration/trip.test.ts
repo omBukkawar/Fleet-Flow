@@ -40,7 +40,7 @@ describe('Trip API Integration', () => {
                 });
 
             expect(res.status).toBe(201);
-            expect(res.body.trip).toEqual(mockTrip);
+            expect(res.body).toEqual(mockTrip);
         });
 
         it('should reject invalid payload via validation middleware', async () => {
@@ -66,7 +66,7 @@ describe('Trip API Integration', () => {
                 .set('Authorization', `Bearer ${dispatchToken}`);
 
             expect(res.status).toBe(200);
-            expect(res.body.trip).toEqual(mockTrip);
+            expect(res.body).toEqual(mockTrip);
             expect(TripService.dispatchTrip).toHaveBeenCalledWith('t1');
         });
 
@@ -87,7 +87,7 @@ describe('Trip API Integration', () => {
                 .send({ distanceKm: 200 });
 
             expect(res.status).toBe(200);
-            expect(res.body.trip.distanceKm).toBe(200);
+            expect(res.body.distanceKm).toBe(200);
             expect(TripService.completeTrip).toHaveBeenCalledWith('t1', 200);
         });
     });
