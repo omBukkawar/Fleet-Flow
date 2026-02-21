@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -37,12 +38,13 @@ async function main() {
     });
 
     // 2. Users
-    // password: "password123" (Not hashed here for brevity of seed scripts but will be via Argon2 in auth phase)
+    const hashedPassword = await bcrypt.hash('password123', 10);
+
     await prisma.user.createMany({
         data: [
-            { email: 'admin@fleetflow.com', name: 'Admin Flow', password: 'password123', role: 'ADMIN' },
-            { email: 'manager@fleetflow.com', name: 'Fleet Manager', password: 'password123', role: 'MANAGER' },
-            { email: 'dispatcher@fleetflow.com', name: 'Dave Dispatch', password: 'password123', role: 'DISPATCHER' },
+            { email: 'admin@fleetflow.com', name: 'Admin Flow', password: hashedPassword, role: 'ADMIN' },
+            { email: 'manager@fleetflow.com', name: 'Fleet Manager', password: hashedPassword, role: 'MANAGER' },
+            { email: 'dispatcher@fleetflow.com', name: 'Dave Dispatch', password: hashedPassword, role: 'DISPATCHER' },
         ]
     });
 
