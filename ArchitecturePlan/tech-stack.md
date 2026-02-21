@@ -3,13 +3,13 @@
 This document maps concrete technology choices to the functional and non-functional requirements in `project requirements.md` and the UI flows in `ui.md`.
 
 ## Summary (top-level)
-- Frontend: Next.js + React + TypeScript + Tailwind CSS
-- Backend: Node.js + NestJS (TypeScript) — REST API with OpenAPI
+- Frontend: Next.js + React (JavaScript) + Tailwind CSS
+- Backend: Django + Django REST Framework (Python) — REST API with OpenAPI/Swagger
 - Database: PostgreSQL (primary), TimescaleDB extension optional for time-series analytics
-- Caching / Queue: Redis + BullMQ
-- Auth & Security: JWT (access + refresh), Argon2 for password hashing, RBAC (policy-based)
+- Caching / Queue: Redis + Celery
+- Auth & Security: JWT (access + refresh) or Django session cookies; Argon2 for password hashing via Django
 - Observability: Prometheus + Grafana, Sentry
-- Deploy: Docker + Kubernetes (or Azure Container Apps / AWS ECS) with CI/CD via GitHub Actions
+- Deploy: Docker + Kubernetes (or managed platform like Azure App Service / AWS ECS) with CI/CD via GitHub Actions
 
 ## Rationale vs requirements
 - ACID DB and complex relational queries → PostgreSQL: supports transactions, indexes, ACID guarantees, and rich SQL for analytics.
@@ -19,22 +19,22 @@ This document maps concrete technology choices to the functional and non-functio
 - Exporting CSV/PDF and analytics → Postgres for aggregates; generate CSV server-side; use an HTML-to-PDF service (wkhtmltopdf or a headless Chromium step) for PDF exports.
 
 ## Frontend (detailed)
-- Framework: Next.js 14 (or stable LTS) + React + TypeScript
-- Styling: Tailwind CSS (fast dev) + component library (Headless UI / Radix + custom components)
-- State management: React Query (TanStack Query) for server state and caching; Zustand for local UI state if needed
-- Charts: Recharts or Chart.js (or use Vega-Lite for richer visualizations)
-- Auth: Secure cookie (HttpOnly) for refresh token + in-memory access token for API calls (or same-site cookies for both tokens)
+- Framework: Next.js (use JavaScript files, no TypeScript) + React
+- Styling: Tailwind CSS + component primitives (Headless UI / Radix)
+- State management: React Query (TanStack Query) or SWR for server state; Zustand for client UI state if needed
+- Charts: Recharts or Chart.js (Vega-Lite for richer visualizations)
+- Auth: Prefer HttpOnly SameSite cookies for refresh tokens and short-lived access tokens stored in memory (works with Django JWT or session auth)
 - Accessibility: follow WCAG basics; ensure table and modal components are keyboard-accessible
 
-## Backend (detailed)
-- Framework: NestJS (TypeScript) — modular, DI, decorators make RBAC and validation straightforward
-- API style: RESTful endpoints + OpenAPI (Swagger) docs; consider GraphQL for complex queries later
-- Validation: class-validator / DTOs in NestJS
-- Passwords: argon2 (argon2id) via npm `argon2` package
-- Auth: JWT with short-lived access tokens + refresh tokens stored as HttpOnly secure cookies; token revocation stored in DB or Redis
-- RBAC: Use a policy-based approach (roles + permissions) stored in DB; enforce at controller/guard level
-- Background jobs: BullMQ + Redis for long-running tasks (report generation, CSV export, notifications)
-- File uploads: store receipts/images in object storage (S3-compatible or Azure Blob); keep references in DB
+## Backend (detailed) — Django option
+- Framework: Django + Django REST Framework (DRF). Well-suited for relational apps with ACID requirements.
+- API style: RESTful endpoints with OpenAPI/Swagger via `drf-yasg` or `drf-spectacular`; GraphQL (Graphene) optional for future needs.
+- Validation & serialization: DRF Serializers and Validators; use model-level clean() for business rules.
+- Passwords: Django's auth uses PBKDF2 by default; configure Argon2 (`django-argon2`) if preferred.
+- Auth: Use `djangorestframework-simplejwt` for JWT flows, or rely on secure session cookies for server-side sessions. Implement refresh token rotation and revocation using Redis or DB.
+- RBAC: Use Django Groups + Permissions or a policy library; enforce at view/permission classes.
+- Background jobs: Celery + Redis for asynchronous tasks (report generation, heavy exports, notifications); use Celery Beat for scheduled jobs.
+- File uploads: Use Django Storage backends (django-storages) to store receipts in S3/Blob; keep file metadata in DB.
 
 ## Database & schema notes
 - Primary: PostgreSQL 14+; use UUIDs for primary keys (pgcrypto uuid_generate_v4)
@@ -63,12 +63,11 @@ This document maps concrete technology choices to the functional and non-functio
 
 ## Third-party services & libs (examples)
 - Auth: `argon2`, `jsonwebtoken`, `passport-jwt` (or NestJS JWT module)
-- ORM: TypeORM or Prisma (Prisma recommended for DX + typed queries)
-- Queue: `bullmq` + `ioredis`
-- Testing: Jest (unit), Supertest (integration)
-- Linting & formatting: ESLint + Prettier + Husky pre-commit hooks
-- Monitoring: `prom-client` for Prometheus metrics
-- Error tracking: Sentry SDK
+-- ORM: Django ORM (batteries-included) or use SQLAlchemy for custom patterns
+-- Queue: Celery + Redis
+-- Testing: Pytest + pytest-django for backend tests; use Jest for frontend tests
+-- Linting & formatting: Black + Flake8 + isort for Python; ESLint + Prettier for JS
+-- Monitoring: Prometheus client for Django (`django-prometheus`) and Sentry for error tracking
 
 ## Data model & API considerations mapped to UI
 - Dashboard KPIs: maintain small aggregated counters in Redis updated on state transitions (trip start/complete, maintenance in/out)
@@ -77,8 +76,27 @@ This document maps concrete technology choices to the functional and non-functio
 - Exports: generate CSV from DB query; for PDF use server-side renderer or headless Chromium job
 
 ## Dev workflow & quick-start dev stack
-- Local dev: Docker Compose with PostgreSQL, Redis, and Node app
-- Scripts: `npm run dev` (frontend), `npm run start:dev` (backend), `docker compose up` for full local stack
+- Local dev: Docker Compose with PostgreSQL, Redis, Django app, and Next.js frontend
+- Python env: use `venv` or `pipenv`/`poetry`; requirements in `requirements.txt` or `pyproject.toml`
+- Scripts: `npm run dev` (frontend), `python manage.py runserver` (backend) or `gunicorn project.wsgi` for production; `docker compose up` for full local stack
+
+Example minimal service list for `docker-compose.yml`:
+```yaml
+services:
+	db:
+		image: postgres:14
+	redis:
+		image: redis:7
+	web:
+		build: ./apps/api
+		command: gunicorn project.wsgi:application
+	frontend:
+		build: ./apps/frontend
+		command: npm run dev
+	worker:
+		build: ./apps/api
+		command: celery -A project worker -l info
+```
 
 ## Suggested folder & repo structure (monorepo option)
 - /apps/frontend (Next.js)
