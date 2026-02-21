@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { PrismaClient, Role } from '@prisma/client';
 import { AuthController } from './controllers/AuthController';
 import { TripController, CreateTripSchema, CompleteTripSchema } from './controllers/TripController';
+import { AnalyticsController } from './controllers/AnalyticsController';
 import { authenticate, authorize, AuthRequest } from './middleware/auth';
 import { validateRequest } from './middleware/validateRequest';
 
@@ -40,6 +41,11 @@ app.get('/api/protected/finance', authenticate, authorize([Role.MANAGER, Role.FI
 app.post('/api/trips', authenticate, authorize([Role.MANAGER, Role.DISPATCHER]), validateRequest(CreateTripSchema), TripController.createTrip);
 app.post('/api/trips/:id/dispatch', authenticate, authorize([Role.MANAGER, Role.DISPATCHER]), TripController.dispatchTrip);
 app.post('/api/trips/:id/complete', authenticate, authorize([Role.MANAGER, Role.DISPATCHER]), validateRequest(CompleteTripSchema), TripController.completeTrip);
+
+// Analytics Routes
+app.get('/api/analytics/kpis', authenticate, authorize([Role.MANAGER, Role.FINANCIAL_ANALYST]), AnalyticsController.getKPIs);
+app.get('/api/analytics/vehicles/:id', authenticate, authorize([Role.MANAGER, Role.FINANCIAL_ANALYST]), AnalyticsController.getVehicleMetrics);
+app.get('/api/analytics/export', authenticate, authorize([Role.MANAGER, Role.FINANCIAL_ANALYST]), AnalyticsController.exportFleetReport);
 
 // Basic health-check route
 app.get('/health', async (req: Request, res: Response) => {
