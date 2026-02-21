@@ -1,0 +1,450 @@
+# Fleet Flow — UI Overview
+
+This document describes the user interface for the Fleet Flow web application. Sections below provide the purpose, major elements, and key UI components for each area.
+
+---
+
+## Authentication
+
+- Role toggle
+- Login / Register
+
+---
+
+## Main Dashboard
+
+Purpose: A consolidated, "all-in-one" screen to see the current state of the fleet at a glance.
+
+Key elements:
+- KPIs (Big Numbers):
+  - Active Fleet: number of vehicles currently on the road
+  - Maintenance Alerts: vehicles currently in the shop
+  - Utilization Rate: percentage of fleet in active use
+  - Pending Cargo: deliveries waiting in the warehouse
+- Sorting/Filters: filter by vehicle type, status, region, etc.
+
+Layout:
+1. Side Navigation
+	- Dashboard (active by default)
+	- Vehicle Registry
+	- Trip Dispatcher
+	- Maintenance
+	- Trip & Expense
+	- Performance
+	- Analytics
+
+2. Main Dashboard Container
+	A. Header & Search Bar
+		- App title "Fleet Flow" and profile/notification placeholder
+		- Search input with action buttons: `Group by`, `Filter`, `Sort by...`
+
+	B. KPI Cards & Actions
+		- Primary actions: `New Trip`, `New Vehicle`
+		- Summary cards showing top metrics (Active Fleet, Maintenance Alerts, Pending Cargo)
+
+	C. Data Table
+		- Columns: Trip, Vehicle, Driver, Status, etc.
+
+---
+
+## Vehicle Registry (Asset Management)
+
+Purpose: Add, view, edit, and remove fleet vehicles (the digital garage).
+
+Tracked details:
+- Name / Model
+- License Plate
+- Max Load Capacity
+- Odometer
+- Capacity (payload)
+
+UI:
+1. Vehicle Registry Dashboard
+	- Header with `Fleet Flow` logo and search + utility buttons
+	- `+ New Vehicle` action button (opens registration modal)
+	- Asset table columns: NO, Plate, Model, Type, Capacity, Odometer, Status, Actions
+
+2. New Vehicle Registration (Modal)
+	- Fields: License Plate, Max Payload, Initial Odometer, Type, Model
+	- Footer actions: `Save` (confirm) and `Cancel`
+
+---
+
+## Trip Dispatcher & Management
+
+Purpose: Create and manage trips — assign vehicles and drivers, and track trip progress.
+
+How it works:
+- Booking a Trip: choose an available vehicle and driver, enter cargo weight; the system validates capacity.
+- Trip Progress: track status through defined stages (e.g., Created, Dispatched, On Trip, Completed).
+
+UI:
+1. Active Trips Table (top)
+	- Columns: Trip, Fleet Type, Origin, Destination, Status
+
+2. New Trip Form (bottom)
+	- Fields: Select Vehicle, Cargo Weight (Kg), Select Driver, Origin, Destination, Estimated Fuel Cost
+	- Primary action: `Confirm & Dispatch Trip`
+
+---
+
+## Maintenance & Service Logs
+
+Purpose: Track vehicle maintenance history and service events.
+
+How it works:
+- Create service logs for oil changes, repairs, etc.
+- Auto-Hide Rule: saving a maintenance log marks the vehicle as "In Shop" and hides it from the dispatcher to prevent assignment.
+
+UI:
+1. Service Log Dashboard
+	- `Create New Service` button (opens modal)
+	- Maintenance log table: Log ID, Vehicle, Issue/Service, Date, Cost, Status
+
+2. New Service Modal
+	- Fields: Vehicle, Issue/Service, Date
+	- Actions: `Create` (confirm) and `Cancel`
+
+3. Core Logic
+	- Saving a service log updates vehicle status to "In Shop"
+	- Vehicles marked "In Shop" are excluded from dispatching
+
+---
+
+## Expense & Fuel Logging
+
+Purpose: Financial tracking for fuel and trip-related expenses.
+
+How it works:
+- Record fuel fills (liters and cost) and link receipts to vehicles
+- Aggregate fuel and repair bills to compute total cost per vehicle
+
+UI:
+1. Expense Dashboard
+	- `Add an Expense` button opens the input modal
+	- Expense log table: Trip ID, Driver, Distance, Fuel Expense, Misc. Expense, Status
+
+2. New Expense Modal
+	- Fields: Trip ID, Driver, Fuel Cost (amount & liters), Misc Expense
+	- Actions: `Create` and `Cancel`
+
+3. Operational Logic
+	- System links receipts to vehicles and aggregates totals for reporting and insights
+
+---
+
+## Driver Performance & Safety Profiles
+
+Purpose: Manage driver records, licenses, and safety performance.
+
+How it works:
+- Store license number and expiry; if expired, the driver is locked from assignments
+- Maintain a safety score based on on-time performance and incident history
+- Duty status toggle: `On Duty`, `Break`, `Suspended`
+
+UI:
+1. Header & Navigation
+	- Section title and app branding; user avatar placeholder
+
+2. Search & Filter Row
+	- Search bar and action buttons: `Group by`, `Filter`, `Sort by...`
+
+3. Driver Data Table
+	- Columns: Name, License #, Expiry, Completion Rate, Safety Score, Complaints
+
+4. Pagination / List
+	- Supports long lists with pagination and scrolling
+
+---
+
+## Operational Analytics & Financial Reports
+
+Purpose: High-level analytics to support business decisions — efficiency, ROI, and cost analysis.
+
+Key reports:
+- Fuel Efficiency: km per liter trends, identify high-consumption vehicles
+- Fleet ROI: revenue vs. running costs per vehicle
+- Dead Stock Alerts: vehicles with low utilization
+- One-click reports: export to PDF/Excel
+
+UI:
+1. Header
+	- App branding and user profile
+
+2. KPI Cards
+	- Examples: Total Fuel Cost, Fleet ROI, Utilization Rate
+
+3. Charts
+	- Fuel Efficiency Trend (line chart)
+	- Top 5 Costliest Vehicles (bar chart)
+
+4. Financial Summary Table
+	- Monthly breakdown table (Month, Revenue, Fuel Cost, Maintenance, Net Profit)
+
+---
+
+If you'd like, I can also:
+- create a checklist of UI components per screen
+- extract sample JSON for API-driven UI population
+
+Authentication
+	Role toggle
+	login/register
+	
+Main Dashboard
+	Description:git
+what its fors A quick, "all-in-one" screen to see exactly what's happening with your fleet right now,
+The Big Numbers (KPIs):
+Active Fleet: How many vehicles are currently out on the road.
+Mointenance Alerts: How many vehicles are stuck in the shop for repairs.
+Utikzation Rate: A percentage showing how such of your fleet is actually working versus sitting empty.
+Pending Cargo: How many deliveries are sitting in the warehouse waiting for a driver.
+Sorting Tools (Filters): You can quickly clean up the view by looking only at specific groups, like:
+Velicle Type: Oaly show trueks, vans.
+Status: Only show vehicles that are "Ready or "Busy."
+1. Side Navigation Menu
+Located on the far left, this vertical sidebar acts as the primary navigation hub. It contains seven distinct menu items stacked vertically:
+Dashboard: Currently highlighted or active (indicated by its top position).
+Vehicle Registry: Likely for managing the database of trucks or cars.
+Trip Dispatcher: For assigning and managing active routes.
+Maintenance: For tracking vehicle repairs and health.
+Trip & Expense: For financial tracking of fuel, tolls, and costs.
+Performance: Metrics related to efficiency or driver behavior.
+Analytics: High-level data visualization and reporting.
+
+2. Main Dashboard Container
+The right side of the screen displays the "Main Dashboard," which is organized into three horizontal tiers:
+A. Header & Search Bar
+Top Bar: Displays the app name "Fleet Flow" in blue with a simple icon. There is a circular profile or notification placeholder in the top right corner.
+Search & Filters: A secondary bar contains a long Search bar input. To the right of the search bar are three action buttons: "Group by," "Filter," and "Sort by..."
+B. Key Performance Indicators (KPI Cards)
+Below the search bar, there are two primary action buttons—"New Trip" and "New Vehicle"—followed by three large summary cards:
+Active Fleet: Displays a green count of 220.
+Maintenance Alert: Displays a green/yellow count of 180.
+Pending Cargo: Displays a green count of 20.
+C. Data Table
+The bottom half of the dashboard is a structured table showing real-time trip details. The columns are labeled in pink:
+Trip: Lists the trip ID (e.g., "1").
+Vehicle: Contains placeholders (XXXXX) for vehicle identification numbers or names.
+Driver: Lists driver names (e.g., "John Doe").
+Status: Indicates current progress. The first entry is highlighted in orange as "On Trip."
+
+
+Vehicle Registry (Asset Management)
+
+	Description: What it's for: This ts your dtigstal garage. It's the place where you add, view, change, or remove every vehicle your company owns
+The Detais You Track:
+Name/Model: The specifie name/make of the vehicle.
+Ecense Plate: The unique TD for each vehicle so you don't wix them up.
+Mex Load Copacity: How much weight the vehicle can safely carry (in kg or tons)
+Odoseter: The current mileage on the vehicle's dashboard
+	
+	UI:
+		1. Vehicle Registry Dashboard
+This is the background window where existing assets are managed.
+Header & Search: The top section includes the "Fleet Flow" logo and a search bar with utility buttons for "Group by," "Filter," and "Sort by...".
+Action Button: A blue button labeled "+ New Vehicle" is positioned above the table. An arrow indicates that clicking this button opens the "New Vehicle Registration" modal.
+Asset Table: A table displays vehicle details with pink headers. The columns include:
+NO: Row number (e.g., "1").
+Plate: License plate number (e.g., "MH 00").
+Model: Manufacture year or model (e.g., "2017").
+Type: Category of vehicle (e.g., "Mini").
+Capacity: Payload limit (e.g., "5 tonn").
+Odometer: Mileage reading (e.g., "79000").
+Status: Current state (e.g., "Idle").
+Actions: Functional icons, such as an "X" to delete or close a record.
+
+2. New Vehicle Registration (Modal)
+This pop-up window appears to capture data for new fleet assets. It contains the following input fields and controls:
+License Plate: A text input for the vehicle's identifying plate.
+Max Payload: A field to specify the maximum weight capacity.
+Initial Odometer: A field for the starting mileage at the time of registration.
+Type: A field to categorize the vehicle (e.g., Truck, Van, Mini).
+Model: A field for the vehicle make, model, or year.
+Footer Actions: Two distinct buttons are located at the bottom right:
+Save: Outlined in green to confirm the entry.
+Cancel: Outlined in red to discard the entry.
+
+
+Trip Dispatcher and management
+		Description:
+what it's for: This is the "brain" of the operation. It's where you actually set up deliveries and move goods from one place to another.
+How it works:
+Bookng a Trp: You pick a vehicle and a driver that are currently free and ready to go. You eter how much the cargo weighs. If you try to put a 2,000kg load into a 1,000kg van the system will block you and say, "Too heavy!"
+Trip Progress: You can track the status of the job as it moves through four stages:
+
+Ui :
+1. Vehicle Registry (Asset Management)
+This interface focuses on adding and tracking the physical fleet.
+Main Dashboard View:
+Search & Utility: Features a top-aligned search bar alongside "Group by," "Filter," and "Sort by..." buttons.
+Action Trigger: A blue "+ New Vehicle" button is positioned on the right. An arrow indicates that clicking this opens the registration modal.
+Data Table: Displays vehicle information under pink headers: NO, Plate, Model, Type, Capacity, Odometer, Status, and Actions.
+Sample Record: Row 1 shows a "Mini" model from 2017 with a "5 tonn" capacity and "Idle" status.
+New Vehicle Registration (Modal):
+Input Fields: A pop-up form collects the License Plate, Max Payload, Initial Odometer, Type, and Model.
+Controls: Contains "Save" and "Cancel" buttons at the bottom.
+
+2. Trip Dispatcher & Management
+This interface is split horizontally to manage active logistics and create new assignments.
+Active Trips Table (Top):
+Contains columns for Trip, Fleet Type, Origin, Destination, and Status.
+Example Entry: Trip 1 features a "Trailer Truck" traveling from "Mumbai" to "Pune" with an "On way" status.
+New Trip Form (Bottom):
+A dedicated section for inputting logistics data.
+Data Entry Fields:
+Select Vehicle: To assign an available asset.
+Cargo Weight (Kg): For payload tracking.
+Select Driver: To assign personnel.
+Origin Address & Destination: To define the route.
+Estimated Fuel Cost: For budget forecasting.
+Primary Action: A green-outlined "Confirm & Dispatch Trip" button at the bottom.
+
+
+Maintenance & service logs
+	Description:What it's for This is where you keep your vehieles healthy. It tracks every tice a vehicle goes in for a check-up or a repair.
+How it Works:
+Logsing a Repair: When a vehiele needs work (ike an oil change or new tires), you create a log entry here.
+The Auto -Hide" Rule: As soon as you add a vekiele to a maintenanee log, the system automatically marks it as "In Shop." The Benefit: While a vehicle is "In shop,' the Dispatcher cannot see it or pick it For a new trip. This prevents you fron accidentally sending a broken truck out on a delivery.
+
+	Ui:
+	1. Service Log Dashboard (Fleet Flow)
+The main container serves as the central hub for tracking the health of the fleet. It is organized into several key functional areas:
+Global Navigation & Search: At the top, a "Search bar..." is paired with secondary controls for Group by, Filter, and Sort by... to help users manage large volumes of data.
+Action Trigger: A prominent "Create New Service" button is located above the table. A red arrow indicates that clicking this button opens the input modal.
+Maintenance Log Table: A structured table that tracks the status of repairs. The headers include:
+Log ID: Unique identifier (e.g., "321").
+Vehicle: The specific unit (e.g., "TATA").
+Issue/Service: Description of the work (e.g., "Engine Issue").
+Date: Entry date (e.g., "20/02").
+Cost: Estimated or final expense (e.g., "10k").
+Status: Current state of the log (e.g., "New").
+
+2. "New Service" Modal
+When a user initiates a repair log, a focused entry window appears on the left with the following input fields:
+Vehicle Name: A text input to specify which truck is being serviced.
+Issue/Service: A text input to describe the problem (e.g., oil change, tires).
+Date: A date picker or text field for scheduling.
+Buttons: Two distinct actions at the bottom: Create (Green) to confirm the entry and Cancel (Red) to discard changes.
+
+3. Core Logic: The "Auto-Hide" Rule
+The UI is built around a specific safety workflow described in your notes:
+Automatic Status Update: Saving a new log automatically marks the vehicle as "In Shop."
+Dispatcher Restriction: Once marked "In Shop," the vehicle is hidden from the Dispatcher's view.
+Primary Benefit: This creates a digital safeguard, ensuring broken or serviced vehicles cannot be accidentally assigned to new trips.
+
+
+Expense & Fuel logging
+	Description:
+		wlet at's for: Tk's is the dtgitel "wallet" for your fleet. It tracks exactly how much money is being spent to keep your vehicles moving,
+How Works:
+Fadl Tracking: Every time a driver fills up the tank, you record how many liters they bought and how wuch it cost
+Cost per Velicle The system automatically connects these receipts to the specific vehicle used.
+The Maths It adds up the fuel costs and the repair bils to show you the "Total Cost" for each vehicle. This helps you see if a specifie truck is becoming too epensve te kes
+Ui:
+	1. Fleet Flow Dashboard
+The primary interface is a management dashboard used to monitor ongoing and completed trip costs:
+Search and Organization: The top header features a Search bar along with buttons for Group by, Filter, and Sort by... to organize trip data.
+Primary Action: An "Add an Expense" button (highlighted in blue) triggers the creation of a new financial record.
+Expense Log Table: A data grid that displays detailed trip costs. Visible columns include:
+Trip ID: The unique identifier for the journey (e.g., "321").
+Driver: The name of the person operating the vehicle (e.g., "John").
+Distance: The total travel length (e.g., "1000 km").
+Fuel Expense: Costs incurred for fueling (e.g., "19k").
+Misc. Expen: Miscellaneous costs associated with the trip (e.g., "3k").
+Status: The current state of the record (e.g., "Done").
+
+2. "New Expense" Input Modal
+Clicking the add button opens a side modal for manual data entry:
+Trip ID: A field to link the expense to a specific journey.
+Driver: An input for the driver's name.
+Fuel Cost: A field to record the cost and volume of fuel purchased.
+Misc Expense: A field for any additional costs like tolls or minor repairs.
+Controls: Green Create and Cancel buttons to finalize or discard the entry.
+
+3. Operational Logic
+The backend of this UI is designed to automate financial analysis:
+Vehicle Connectivity: The system automatically links receipts and fuel records to the specific vehicle used for the trip.
+Total Cost Calculation: It aggregates fuel costs and repair bills to calculate the "Total Cost" per vehicle.
+Insight Generation: This data helps management identify if a specific truck has become too expensive to maintain over time.
+
+
+	
+Driver performance and safety profiles
+Description:
+	by.
+what ts for Thes page ' all about the people driving your vehicles, It helps you make sure they are legal to drive and doing a good job.
+Complaints
+How st Works:
+4 4
+The Paperork" cheek: You store the driver's license number and when it expires.
+The Safety Lock Rule: If a driver's license expires, the system automatically locks them. You won't be able to assign them to any new trips until they reven it.
+Performonce Scores: The system gives drivers a "Safety Score" based on things like finishing trips on time and whether they've been involved in any accidents or reported issues.
+Dity Status: A si-ple suitch to show if a driver is currently "On Duty," "Taking a Break" or "Suspended."
+Rate atcn
+8
+Ui:
+	1. Header and Navigation
+Title: At the very top, the section is labeled "7. Driver Performance & Safety Profiles" in white handwritten text.
+App Branding: Below the title, inside a rounded container, the app name "Fleet Flow" is written in blue.
+User Icon: A small orange circle in the top-right corner represents a user profile or avatar.
+
+2. Search and Filter Bar
+The interface includes a functional row for organizing the list, featuring:
+Search Bar: A wide text input field on the left containing the placeholder text "Search bar ......".
+Action Buttons: Three distinct buttons on the right side:
+Group by
+Filter
+Sort by...
+
+3. Driver Data Table
+The core of the UI is a data table displaying driver information. The column headers are written in pink text, while the row data is in white.
+Column Header
+Description of Data
+Name
+Name of the driver (Example: "John").
+License#
+Driver's license identification number (Example: "23223").
+Expiry
+License expiration date (Example: "22/36").
+Completion Rate
+Percentage of completed tasks/trips (Example: "92%").
+Saftey Score
+Safety performance metric (Example: "89%"). Note: Contains a typo ("Saftey").
+Complaints
+Number of logged complaints (Example: "4").
+
+
+4. List and Pagination
+Placeholder Data: The table shows three identical rows for "John" as placeholders.
+Scroll/List Indicator: Below the entries, a vertical column of white bullet points extends down the left side, suggesting a long list of drivers that the user can scroll through.
+
+	
+Operational Analytics & financial reports
+
+t's for: This is the "big picture" page. It turns all your data into easy-to-read charts and reports so you can make smarter business decisions
+What You'll See:
+Fuel Efficiency: It tells you which vehicles are "gas guzzlers" and which ones are saving you oney by calculating how far they 9o on every hiter of fuel Vehicle Value (ROT): It calculates if a vehicle is actually making you money. It compares the revenue the vehicle brings in against what you spend on its fuel and repairs Dead Stock Alerts: It kighlights vehicles that are just sitting idle and not being used, so you can decide if you should sell them or assign thew wore work One-click Reports: You can quickly download a PDF or Excel sheet for monthly meetings, payroll, or tax season,
+C
+fr 2197 A167 B 22MB
+110%
+
+	1. Header Section
+App Branding: The top-left corner features the title "Fleet Flow" in blue text.
+User Profile: A small orange circle in the top-right corner serves as a placeholder for a user avatar or profile settings.
+
+2. Key Performance Indicators (KPIs)
+Three green-bordered cards at the top highlight critical fleet metrics:
+Total Fuel Cost: Displays a value of Rs. 2.6 L.
+Fleet ROI: Shows a positive return of + 12.5%.
+Utilization Rate: Indicates an efficiency level of 82%.
+
+3. Graphical Analytics
+The middle section contains two charts visualized on light-colored paper-like backgrounds:
+Fuel Efficiency Trend (kmL): A line graph tracking performance over time, showing data points for various months like Jan, Dec, and Sec (likely a placeholder for Sep).
+Top 5 Costliest Vehicles: A bar chart illustrating the highest spending per vehicle, with labels such as VAN-03 and TRK-01.
+
+4. Financial Summary Table
+The bottom half of the interface is dedicated to a detailed monthly breakdown, introduced by a blue-bordered title "Financial Summary of Month".
+The table features pink headers and white data entries: | Month | Revenue | Fuel Cost | Maintenance | Net Profit | | :--- | :--- | :--- | :--- | :--- | | Jan | Rs. 17L | Rs. 6L | Rs. 2L | Rs. 9L |
+Below the "Jan" entry, a series of white bullet points indicates a list that users can scroll through to view subsequent months.
