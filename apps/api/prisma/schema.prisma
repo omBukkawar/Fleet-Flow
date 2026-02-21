@@ -7,8 +7,176 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Placeholder model to allow Prisma Client generation
+enum Role {
+  ADMIN
+  FLEET_MANAGER
+  DISPATCHER
+}
+
+enum VehicleStatus {
+  AVAILABLE
+  IN_SHOP
+  RETIRED
+  ON_TRIP
+}
+
+enum DriverStatus {
+  ON_DUTY
+  OFF_DUTY
+  ON_TRIP
+}
+
+enum TripStatus {
+  DRAFT
+  DISPATCHED
+  ON_TRIP
+  COMPLETED
+  CANCELLED
+}
+
+// ----------------------------------------------------------------------
+// Core Auth Models
+// ----------------------------------------------------------------------
+
 model User {
-  id    String @id @default(uuid())
-  email String @unique
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(DISPATCHER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  auditLogs AuditLog[]
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  name        String   @unique // e.g. "CAN_DISPATCH_TRIP"
+  description String?
+  createdAt   DateTime @default(now())
+
+  roles RolePermission[]
+}
+
+// Join table for abstract role permissions
+model RolePermission {
+  id           String     @id @default(uuid())
+  role         Role
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  permissionId String
+
+  @@unique([role, permissionId])
+}
+
+// ----------------------------------------------------------------------
+// Fleet & Domain Models
+// ----------------------------------------------------------------------
+
+model Vehicle {
+  id           String        @id @default(uuid())
+  licensePlate String        @unique
+  make         String
+  model        String
+  year         Int
+  maxCapacity  Float         // Maximum cargo weight capacity in kg/lbs
+  status       VehicleStatus @default(AVAILABLE)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  trips           Trip[]
+  maintenanceLogs MaintenanceLog[]
+  fuelLogs        FuelLog[]
+  expenses        Expense[]
+}
+
+model Driver {
+  id                 String       @id @default(uuid())
+  licenseNumber      String       @unique
+  name               String
+  phone              String?
+  licenseExpiryDate  DateTime
+  licenseValid       Boolean      @default(true) // Should be synced via background cron job
+  safetyScore        Int          @default(100)
+  status             DriverStatus @default(ON_DUTY)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  trips             Trip[]
+}
+
+// ----------------------------------------------------------------------
+// Journey & Activity Models
+// ----------------------------------------------------------------------
+
+model Trip {
+  id           String     @id @default(uuid())
+  vehicleId    String
+  driverId     String
+  cargoWeight  Float      // Must be <= Vehicle.maxCapacity
+  status       TripStatus @default(DRAFT)
+  origin       String
+  destination  String
+  startDate    DateTime?
+  endDate      DateTime?
+  distanceKm   Float?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+  driver  Driver  @relation(fields: [driverId], references: [id])
+
+  expenses Expense[]
+}
+
+model MaintenanceLog {
+  id            String   @id @default(uuid())
+  vehicleId     String
+  description   String
+  serviceDate   DateTime @default(now())
+  cost          Float    @default(0.0)
+  isCompleted   Boolean  @default(false)
+  completedDate DateTime?
+  createdAt     DateTime @default(now())
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+}
+
+model FuelLog {
+  id          String   @id @default(uuid())
+  vehicleId   String
+  gallons     Float
+  cost        Float
+  dateFilled  DateTime @default(now())
+  odometer    Float?
+  location    String?
+  createdAt   DateTime @default(now())
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+}
+
+model Expense {
+  id          String   @id @default(uuid())
+  vehicleId   String
+  tripId      String?
+  type        String   // "TOLL", "PARKING", "MISC", etc.
+  amount      Float
+  date        DateTime @default(now())
+  description String?
+  createdAt   DateTime @default(now())
+
+  vehicle Vehicle  @relation(fields: [vehicleId], references: [id])
+  trip    Trip?    @relation(fields: [tripId], references: [id])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String
+  entity    String   // e.g. "Trip", "Vehicle"
+  entityId  String
+  details   Json?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 }
