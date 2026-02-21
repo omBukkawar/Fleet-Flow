@@ -1,0 +1,91 @@
+
+> frontend@0.0.0 test
+> jest
+
+ts-jest[config] (WARN) message TS151001: If you have issues related to imports, you should consider setting `esModuleInterop` to `true` in your TypeScript configuration file (usually `tsconfig.json`). See https://blogs.msdn.microsoft.com/typescript/2018/01/31/announcing-typescript-2-7/#easier-ecmascript-module-interoperability for more information.
+ts-jest[config] (WARN) message TS151001: If you have issues related to imports, you should consider setting `esModuleInterop` to `true` in your TypeScript configuration file (usually `tsconfig.json`). See https://blogs.msdn.microsoft.com/typescript/2018/01/31/announcing-typescript-2-7/#easier-ecmascript-module-interoperability for more information.
+FAIL __tests__/Dashboard.test.tsx
+  ÔùÅ Test suite failed to run
+
+    __tests__/Dashboard.test.tsx:1:8 - error TS1259: Module '"C:/Users/pkosh/OneDrive/Documents/odoo/project2/Fleet-Flow/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+
+    1 import React from 'react';
+             ~~~~~
+
+      ../../node_modules/@types/react/index.d.ts:47:1
+        47 export = React;
+           ~~~~~~~~~~~~~~~
+        This module is declared with 'export =', and can only be used with a default import when using the 'esModuleInterop' flag.
+    __tests__/Dashboard.test.tsx:2:10 - error TS1295: ECMAScript imports and exports cannot be written in a CommonJS file under 'verbatimModuleSyntax'. Adjust the 'type' field in the nearest 'package.json' to make this file an ECMAScript module, or adjust your 'verbatimModuleSyntax', 'module', and 'moduleResolution' settings in TypeScript.
+
+    2 import { render, screen, waitFor } from '@testing-library/react';
+               ~~~~~~
+    __tests__/Dashboard.test.tsx:2:18 - error TS1295: ECMAScript imports and exports cannot be written in a CommonJS file under 'verbatimModuleSyntax'. Adjust the 'type' field in the nearest 'package.json' to make this file an ECMAScript module, or adjust your 'verbatimModuleSyntax', 'module', and 'moduleResolution' settings in TypeScript.
+
+    2 import { render, screen, waitFor } from '@testing-library/react';
+                       ~~~~~~
+    __tests__/Dashboard.test.tsx:2:26 - error TS1295: ECMAScript imports and exports cannot be written in a CommonJS file under 'verbatimModuleSyntax'. Adjust the 'type' field in the nearest 'package.json' to make this file an ECMAScript module, or adjust your 'verbatimModuleSyntax', 'module', and 'moduleResolution' settings in TypeScript.
+
+    2 import { render, screen, waitFor } from '@testing-library/react';
+                               ~~~~~~~
+    __tests__/Dashboard.test.tsx:3:10 - error TS1295: ECMAScript imports and exports cannot be written in a CommonJS file under 'verbatimModuleSyntax'. Adjust the 'type' field in the nearest 'package.json' to make this file an ECMAScript module, or adjust your 'verbatimModuleSyntax', 'module', and 'moduleResolution' settings in TypeScript.
+
+    3 import { Dashboard } from '../src/pages/Dashboard';
+               ~~~~~~~~~
+    __tests__/Dashboard.test.tsx:6:1 - error TS2304: Cannot find name 'jest'.
+
+    6 jest.mock('../src/lib/api', () => ({
+      ~~~~
+    __tests__/Dashboard.test.tsx:8:14 - error TS2304: Cannot find name 'jest'.
+
+    8         get: jest.fn().mockResolvedValue({
+                   ~~~~
+    __tests__/Dashboard.test.tsx:19:1 - error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+
+    19 describe('Dashboard Insights API Load', () => {
+       ~~~~~~~~
+    __tests__/Dashboard.test.tsx:20:5 - error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+
+    20     it('renders dashboard heading properly', async () => {
+           ~~
+    __tests__/Dashboard.test.tsx:23:9 - error TS2304: Cannot find name 'expect'.
+
+    23         expect(screen.getByText('Global Fleet Dashboard')).toBeInTheDocument();
+               ~~~~~~
+    __tests__/Dashboard.test.tsx:27:13 - error TS2304: Cannot find name 'expect'.
+
+    27             expect(screen.getByText('15 vehicles active')).toBeInTheDocument();
+                   ~~~~~~
+    __tests__/Dashboard.test.tsx:28:13 - error TS2304: Cannot find name 'expect'.
+
+    28             expect(screen.getByText('88.5%')).toBeInTheDocument();
+                   ~~~~~~
+    __tests__/Dashboard.test.tsx:29:13 - error TS2304: Cannot find name 'expect'.
+
+    29             expect(screen.getByText('5.2%')).toBeInTheDocument();
+                   ~~~~~~
+
+FAIL e2e/smoke.spec.ts
+  ÔùÅ Test suite failed to run
+
+    e2e/smoke.spec.ts:1:10 - error TS1295: ECMAScript imports and exports cannot be written in a CommonJS file under 'verbatimModuleSyntax'. Adjust the 'type' field in the nearest 'package.json' to make this file an ECMAScript module, or adjust your 'verbatimModuleSyntax', 'module', and 'moduleResolution' settings in TypeScript.
+
+    1 import { test, expect } from '@playwright/test';
+               ~~~~
+    e2e/smoke.spec.ts:1:16 - error TS1295: ECMAScript imports and exports cannot be written in a CommonJS file under 'verbatimModuleSyntax'. Adjust the 'type' field in the nearest 'package.json' to make this file an ECMAScript module, or adjust your 'verbatimModuleSyntax', 'module', and 'moduleResolution' settings in TypeScript.
+
+    1 import { test, expect } from '@playwright/test';
+                     ~~~~~~
+
+Test Suites: 2 failed, 2 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        17.198 s
+Ran all test suites.
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path C:\Users\pkosh\OneDrive\Documents\odoo\project2\Fleet-Flow\apps\frontend
+npm error workspace frontend@0.0.0
+npm error location C:\Users\pkosh\OneDrive\Documents\odoo\project2\Fleet-Flow\apps\frontend
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c jest

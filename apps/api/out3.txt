@@ -1,13 +1,9 @@
-FAIL src/__tests__/integration/trip.test.ts
-  ÔùÅ Test suite failed to run
+PASS src/__tests__/integration/concurrency.test.ts (5.158 s)
+  Concurrency Integration - Trip Limits
+    ÔêÜ prevents double booking when two dispatches hit the same vehicle simultaneously (133 ms)
 
-    src/middleware/validateRequest.ts:15:97 - error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
-
-    15                 res.status(400).json({ error: 'Validation failed', details: (error as ZodError).errors });
-                                                                                                       ~~~~~~
-
-Test Suites: 1 failed, 1 total
-Tests:       0 total
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
 Snapshots:   0 total
-Time:        4.981 s
-Ran all test suites matching src/__tests__/integration/trip.test.ts.
+Time:        5.917 s, estimated 7 s
+Ran all test suites matching src/__tests__/integration/concurrency.test.ts.

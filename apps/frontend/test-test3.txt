@@ -1,0 +1,27 @@
+FAIL __tests__/Dashboard.test.tsx
+  ÔùÅ Test suite failed to run
+
+    Cannot find module 'react' from '../../node_modules/@testing-library/react/dist/act-compat.js'
+
+    Require stack:
+      C:/Users/pkosh/OneDrive/Documents/odoo/project2/Fleet-Flow/node_modules/@testing-library/react/dist/act-compat.js
+      C:/Users/pkosh/OneDrive/Documents/odoo/project2/Fleet-Flow/node_modules/@testing-library/react/dist/index.js
+      __tests__/Dashboard.test.tsx
+
+      1 | import React from 'react';
+    > 2 | import { render, screen, waitFor } from '@testing-library/react';
+        | ^
+      3 | import { Dashboard } from '../src/pages/Dashboard';
+      4 |
+      5 | // Mock the api client calls
+
+      at Resolver._throwModNotFoundError (../../node_modules/jest-resolve/build/index.js:863:11)
+      at Object.<anonymous> (../../node_modules/@testing-library/react/dist/act-compat.js:9:37)
+      at Object.<anonymous> (../../node_modules/@testing-library/react/dist/index.js:6:18)
+      at Object.<anonymous> (__tests__/Dashboard.test.tsx:2:1)
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        8.088 s
+Ran all test suites.

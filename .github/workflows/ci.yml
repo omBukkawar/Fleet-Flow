@@ -11,30 +11,28 @@ jobs:
   backend-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: '3.10'
+          node-version: '22'
       - name: Install dependencies
-        run: |
-          pip install -r apps/api/requirements.txt
+        run: npm ci
       - name: Run backend tests
         run: |
-          pytest apps/api/tests
+          cd apps/api
+          npm test
 
   frontend-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
       - name: Install dependencies
-        run: |
-          cd apps/frontend
-          npm install
+        run: npm ci
       - name: Run frontend unit tests
         run: |
           cd apps/frontend
@@ -43,16 +41,18 @@ jobs:
   e2e-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
       - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright Browsers
         run: |
           cd apps/frontend
-          npm install
+          npx playwright install --with-deps
       - name: Run E2E tests
         run: |
           cd apps/frontend
-          npm run e2e || true
+          npm run e2e
