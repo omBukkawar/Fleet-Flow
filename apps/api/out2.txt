@@ -1,0 +1,62 @@
+FAIL src/__tests__/services/TripService.test.ts
+  TripService
+    ÔêÜ fails to dispatch if vehicle is NOT AVAILABLE (14 ms)
+    ├ù fails to dispatch if cargo exceeds max capacity (16 ms)
+    ├ù succeeds dispatching trip when all constraints match (1 ms)
+    ├ù fails dispatch if driver has another active trip (1 ms)
+    ÔêÜ completes trip and updates distanceKm correctly (3 ms)
+
+  ÔùÅ TripService ÔÇ║ fails to dispatch if cargo exceeds max capacity
+
+    expect(received).rejects.toThrow(expected)
+
+    Expected constructor: ValidationError
+    Received constructor: TypeError
+
+    Received message: "tx.trip.count is not a function"
+
+          58 |             }
+          59 |
+        > 60 |             const activeTrips = await tx.trip.count({
+             |                                               ^
+          61 |                 where: { driverId: trip.driverId, status: { in: [TripStatus.DISPATCHED, TripStatus.ON_TRIP] } }
+          62 |             });
+          63 |             if (activeTrips > 0) {
+
+      at src/services/TripService.ts:60:47
+      at Object.toThrow (../../node_modules/expect/build/index.js:2155:20)
+      at Object.<anonymous> (src/__tests__/services/TripService.test.ts:71:22)
+
+  ÔùÅ TripService ÔÇ║ succeeds dispatching trip when all constraints match
+
+    TypeError: tx.trip.count is not a function
+
+      58 |             }
+      59 |
+    > 60 |             const activeTrips = await tx.trip.count({
+         |                                               ^
+      61 |                 where: { driverId: trip.driverId, status: { in: [TripStatus.DISPATCHED, TripStatus.ON_TRIP] } }
+      62 |             });
+      63 |             if (activeTrips > 0) {
+
+      at src/services/TripService.ts:60:47
+
+  ÔùÅ TripService ÔÇ║ fails dispatch if driver has another active trip
+
+    TypeError: Cannot read properties of undefined (reading 'mockResolvedValue')
+
+      104 |         });
+      105 |         // mock active trips = 1
+    > 106 |         (prisma.trip.count as jest.Mock).mockResolvedValue(1);
+          |                                          ^
+      107 |
+      108 |         await expect(TripService.dispatchTrip('t4')).rejects.toThrow(ValidationError);
+      109 |     });
+
+      at Object.<anonymous> (src/__tests__/services/TripService.test.ts:106:42)
+
+Test Suites: 1 failed, 1 total
+Tests:       3 failed, 2 passed, 5 total
+Snapshots:   0 total
+Time:        3.09 s, estimated 7 s
+Ran all test suites matching src/__tests__/services/TripService.test.ts.

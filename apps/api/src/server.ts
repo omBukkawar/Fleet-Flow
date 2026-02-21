@@ -3,7 +3,9 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { PrismaClient, Role } from '@prisma/client';
 import { AuthController } from './controllers/AuthController';
+import { TripController, CreateTripSchema, CompleteTripSchema } from './controllers/TripController';
 import { authenticate, authorize, AuthRequest } from './middleware/auth';
+import { validateRequest } from './middleware/validateRequest';
 
 dotenv.config();
 
@@ -34,6 +36,11 @@ app.get('/api/protected/finance', authenticate, authorize([Role.MANAGER, Role.FI
     res.json({ message: 'Financial Analyst access granted', user: (req as AuthRequest).user });
 });
 
+// Trip Routes
+app.post('/api/trips', authenticate, authorize([Role.MANAGER, Role.DISPATCHER]), validateRequest(CreateTripSchema), TripController.createTrip);
+app.post('/api/trips/:id/dispatch', authenticate, authorize([Role.MANAGER, Role.DISPATCHER]), TripController.dispatchTrip);
+app.post('/api/trips/:id/complete', authenticate, authorize([Role.MANAGER, Role.DISPATCHER]), validateRequest(CompleteTripSchema), TripController.completeTrip);
+
 // Basic health-check route
 app.get('/health', async (req: Request, res: Response) => {
     try {
@@ -46,6 +53,10 @@ app.get('/health', async (req: Request, res: Response) => {
     }
 });
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(port, () => {
+        console.log(`Server is running on port ${port}`);
+    });
+}
+
+export { app };

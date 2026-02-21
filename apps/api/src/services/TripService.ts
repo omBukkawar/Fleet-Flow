@@ -1,4 +1,4 @@
-import { TripStatus, VehicleStatus, DriverStatus } from '@prisma/client';
+import { TripStatus, VehicleStatus, DriverStatus, Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma';
 import { NotFoundError, StateTransitionError, ValidationError } from '../errors/DomainError';
 import { VehicleService } from './VehicleService';
@@ -18,16 +18,28 @@ export class TripService {
         return this.ALLOWED_TRANSITIONS[current]?.includes(target);
     }
 
-    /**
-     * Validates and moves a trip from DRAFT to DISPATCHED. 
-     * This involves DB constraints on the dependencies.
-     */
+    public static async createTrip(data: { vehicleId: string, driverId: string, cargoWeight: number, origin: string, destination: string }) {
+        return await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+            const vehicle = await tx.vehicle.findUnique({ where: { id: data.vehicleId } });
+            const driver = await tx.driver.findUnique({ where: { id: data.driverId } });
+
+            if (!vehicle) throw new NotFoundError('Vehicle not found');
+            if (!driver) throw new NotFoundError('Driver not found');
+            if (data.cargoWeight > vehicle.maxCapacity) {
+                throw new ValidationError(`Cargo weight ${data.cargoWeight} exceeds vehicle capacity ${vehicle.maxCapacity}`);
+            }
+
+            return tx.trip.create({
+                data: {
+                    ...data,
+                    status: TripStatus.DRAFT,
+                }
+            });
+        });
+    }
+
     public static async dispatchTrip(tripId: string) {
-        return await prisma.$transaction(async (tx) => {
-            // 1. Fetch trip and its related entities FOR UPDATE (locking)
-            // Since Prisma doesn't directly support `SELECT ... FOR UPDATE` via the Prisma Client seamlessly on includes,
-            // we usually fall back to raw if strict DB level locks are needed, or rely on serializable isolation.
-            // Below we simulate the logic safely within the transaction.
+        return await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
             const trip = await tx.trip.findUnique({
                 where: { id: tripId },
                 include: { vehicle: true, driver: true }
@@ -38,13 +50,20 @@ export class TripService {
                 throw new StateTransitionError('Trip', trip.status, TripStatus.DISPATCHED);
             }
 
-            // Check validations for dispatch
             if (trip.vehicle.status !== VehicleStatus.AVAILABLE) {
                 throw new ValidationError(`Vehicle ${trip.vehicleId} is not AVAILABLE`);
             }
             if (trip.driver.status !== DriverStatus.ON_DUTY) {
                 throw new ValidationError(`Driver ${trip.driverId} is not ON_DUTY`);
             }
+
+            const activeTrips = await tx.trip.count({
+                where: { driverId: trip.driverId, status: { in: [TripStatus.DISPATCHED, TripStatus.ON_TRIP] } }
+            });
+            if (activeTrips > 0) {
+                throw new ValidationError(`Driver ${trip.driverId} is assigned to another active trip`);
+            }
+
             if (trip.driver.licenseValid === false || new Date() > new Date(trip.driver.licenseExpiryDate)) {
                 throw new ValidationError(`Driver ${trip.driverId} has an expired or invalid license`);
             }
@@ -52,24 +71,18 @@ export class TripService {
                 throw new ValidationError(`Cargo weight ${trip.cargoWeight} exceeds vehicle capacity ${trip.vehicle.maxCapacity}`);
             }
 
-            // Execute atomic updates
             await VehicleService.updateStatus(trip.vehicleId, VehicleStatus.ON_TRIP, tx);
             await DriverService.updateStatus(trip.driverId, DriverStatus.ON_TRIP, tx);
 
-            const updatedTrip = await tx.trip.update({
+            return tx.trip.update({
                 where: { id: tripId },
-                data: { status: TripStatus.DISPATCHED }
+                data: { status: TripStatus.DISPATCHED, startDate: new Date() }
             });
-
-            return updatedTrip;
         });
     }
 
-    /**
-     * Complete a Trip.
-     */
-    public static async completeTrip(tripId: string) {
-        return await prisma.$transaction(async (tx) => {
+    public static async completeTrip(tripId: string, distanceKm: number) {
+        return await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
             const trip = await tx.trip.findUnique({ where: { id: tripId } });
             if (!trip) throw new NotFoundError('Trip not found');
 
@@ -77,22 +90,18 @@ export class TripService {
                 throw new StateTransitionError('Trip', trip.status, TripStatus.COMPLETED);
             }
 
-            // Free vehicle and driver
             await VehicleService.updateStatus(trip.vehicleId, VehicleStatus.AVAILABLE, tx);
             await DriverService.updateStatus(trip.driverId, DriverStatus.ON_DUTY, tx);
 
             return tx.trip.update({
                 where: { id: tripId },
-                data: { status: TripStatus.COMPLETED, endDate: new Date() }
+                data: { status: TripStatus.COMPLETED, endDate: new Date(), distanceKm }
             });
         });
     }
 
-    /**
-     * Cancel a Trip.
-     */
     public static async cancelTrip(tripId: string) {
-        return await prisma.$transaction(async (tx) => {
+        return await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
             const trip = await tx.trip.findUnique({ where: { id: tripId } });
             if (!trip) throw new NotFoundError('Trip not found');
 
@@ -100,7 +109,6 @@ export class TripService {
                 throw new StateTransitionError('Trip', trip.status, TripStatus.CANCELLED);
             }
 
-            // If it was already dispatched/on-trip, we must free the connected resources
             if (trip.status === TripStatus.DISPATCHED || trip.status === TripStatus.ON_TRIP) {
                 await VehicleService.updateStatus(trip.vehicleId, VehicleStatus.AVAILABLE, tx);
                 await DriverService.updateStatus(trip.driverId, DriverStatus.ON_DUTY, tx);
