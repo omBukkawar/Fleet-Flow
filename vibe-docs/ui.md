@@ -1,3 +1,192 @@
+# Fleet Flow — UI Overview
+
+This document describes the user interface for the Fleet Flow web application. Sections below provide the purpose, major elements, and key UI components for each area.
+
+---
+
+## Authentication
+
+- Role toggle
+- Login / Register
+
+---
+
+## Main Dashboard
+
+Purpose: A consolidated, "all-in-one" screen to see the current state of the fleet at a glance.
+
+Key elements:
+- KPIs (Big Numbers):
+  - Active Fleet: number of vehicles currently on the road
+  - Maintenance Alerts: vehicles currently in the shop
+  - Utilization Rate: percentage of fleet in active use
+  - Pending Cargo: deliveries waiting in the warehouse
+- Sorting/Filters: filter by vehicle type, status, region, etc.
+
+Layout:
+1. Side Navigation
+	- Dashboard (active by default)
+	- Vehicle Registry
+	- Trip Dispatcher
+	- Maintenance
+	- Trip & Expense
+	- Performance
+	- Analytics
+
+2. Main Dashboard Container
+	A. Header & Search Bar
+		- App title "Fleet Flow" and profile/notification placeholder
+		- Search input with action buttons: `Group by`, `Filter`, `Sort by...`
+
+	B. KPI Cards & Actions
+		- Primary actions: `New Trip`, `New Vehicle`
+		- Summary cards showing top metrics (Active Fleet, Maintenance Alerts, Pending Cargo)
+
+	C. Data Table
+		- Columns: Trip, Vehicle, Driver, Status, etc.
+
+---
+
+## Vehicle Registry (Asset Management)
+
+Purpose: Add, view, edit, and remove fleet vehicles (the digital garage).
+
+Tracked details:
+- Name / Model
+- License Plate
+- Max Load Capacity
+- Odometer
+- Capacity (payload)
+
+UI:
+1. Vehicle Registry Dashboard
+	- Header with `Fleet Flow` logo and search + utility buttons
+	- `+ New Vehicle` action button (opens registration modal)
+	- Asset table columns: NO, Plate, Model, Type, Capacity, Odometer, Status, Actions
+
+2. New Vehicle Registration (Modal)
+	- Fields: License Plate, Max Payload, Initial Odometer, Type, Model
+	- Footer actions: `Save` (confirm) and `Cancel`
+
+---
+
+## Trip Dispatcher & Management
+
+Purpose: Create and manage trips — assign vehicles and drivers, and track trip progress.
+
+How it works:
+- Booking a Trip: choose an available vehicle and driver, enter cargo weight; the system validates capacity.
+- Trip Progress: track status through defined stages (e.g., Created, Dispatched, On Trip, Completed).
+
+UI:
+1. Active Trips Table (top)
+	- Columns: Trip, Fleet Type, Origin, Destination, Status
+
+2. New Trip Form (bottom)
+	- Fields: Select Vehicle, Cargo Weight (Kg), Select Driver, Origin, Destination, Estimated Fuel Cost
+	- Primary action: `Confirm & Dispatch Trip`
+
+---
+
+## Maintenance & Service Logs
+
+Purpose: Track vehicle maintenance history and service events.
+
+How it works:
+- Create service logs for oil changes, repairs, etc.
+- Auto-Hide Rule: saving a maintenance log marks the vehicle as "In Shop" and hides it from the dispatcher to prevent assignment.
+
+UI:
+1. Service Log Dashboard
+	- `Create New Service` button (opens modal)
+	- Maintenance log table: Log ID, Vehicle, Issue/Service, Date, Cost, Status
+
+2. New Service Modal
+	- Fields: Vehicle, Issue/Service, Date
+	- Actions: `Create` (confirm) and `Cancel`
+
+3. Core Logic
+	- Saving a service log updates vehicle status to "In Shop"
+	- Vehicles marked "In Shop" are excluded from dispatching
+
+---
+
+## Expense & Fuel Logging
+
+Purpose: Financial tracking for fuel and trip-related expenses.
+
+How it works:
+- Record fuel fills (liters and cost) and link receipts to vehicles
+- Aggregate fuel and repair bills to compute total cost per vehicle
+
+UI:
+1. Expense Dashboard
+	- `Add an Expense` button opens the input modal
+	- Expense log table: Trip ID, Driver, Distance, Fuel Expense, Misc. Expense, Status
+
+2. New Expense Modal
+	- Fields: Trip ID, Driver, Fuel Cost (amount & liters), Misc Expense
+	- Actions: `Create` and `Cancel`
+
+3. Operational Logic
+	- System links receipts to vehicles and aggregates totals for reporting and insights
+
+---
+
+## Driver Performance & Safety Profiles
+
+Purpose: Manage driver records, licenses, and safety performance.
+
+How it works:
+- Store license number and expiry; if expired, the driver is locked from assignments
+- Maintain a safety score based on on-time performance and incident history
+- Duty status toggle: `On Duty`, `Break`, `Suspended`
+
+UI:
+1. Header & Navigation
+	- Section title and app branding; user avatar placeholder
+
+2. Search & Filter Row
+	- Search bar and action buttons: `Group by`, `Filter`, `Sort by...`
+
+3. Driver Data Table
+	- Columns: Name, License #, Expiry, Completion Rate, Safety Score, Complaints
+
+4. Pagination / List
+	- Supports long lists with pagination and scrolling
+
+---
+
+## Operational Analytics & Financial Reports
+
+Purpose: High-level analytics to support business decisions — efficiency, ROI, and cost analysis.
+
+Key reports:
+- Fuel Efficiency: km per liter trends, identify high-consumption vehicles
+- Fleet ROI: revenue vs. running costs per vehicle
+- Dead Stock Alerts: vehicles with low utilization
+- One-click reports: export to PDF/Excel
+
+UI:
+1. Header
+	- App branding and user profile
+
+2. KPI Cards
+	- Examples: Total Fuel Cost, Fleet ROI, Utilization Rate
+
+3. Charts
+	- Fuel Efficiency Trend (line chart)
+	- Top 5 Costliest Vehicles (bar chart)
+
+4. Financial Summary Table
+	- Monthly breakdown table (Month, Revenue, Fuel Cost, Maintenance, Net Profit)
+
+---
+
+If you'd like, I can also:
+- create a checklist of UI components per screen
+- extract sample JSON for API-driven UI population
+
 Authentication
 	Role toggle
 	login/register
