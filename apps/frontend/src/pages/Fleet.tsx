@@ -55,7 +55,7 @@ export const Fleet: React.FC = () => {
                     <h1 className="page-title">Fleet Management</h1>
                     <p className="page-subtitle">Manage and track your vehicles</p>
                 </div>
-                <button className="btn-primary">
+                <button className="btn-primary" onClick={() => alert('Add Vehicle modal coming soon!')}>
                     <Plus size={18} style={{ marginRight: '8px' }} />
                     Add Vehicle
                 </button>

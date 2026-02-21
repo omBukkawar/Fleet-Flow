@@ -68,7 +68,7 @@ export const Drivers: React.FC = () => {
                     <h1 className="page-title">Driver Roster</h1>
                     <p className="page-subtitle">Manage personnel and assignments</p>
                 </div>
-                <button className="btn-primary">
+                <button className="btn-primary" onClick={() => alert('Add Driver modal coming soon!')}>
                     <Plus size={18} style={{ marginRight: '8px' }} />
                     Add Driver
                 </button>

@@ -11,7 +11,7 @@ export const Maintenance: React.FC = () => {
                     <h1 className="page-title">Maintenance Logs</h1>
                     <p className="page-subtitle">Track repairs and resolve vehicle errors</p>
                 </div>
-                <button className="btn-primary">
+                <button className="btn-primary" onClick={() => alert('Log Service modal coming soon!')}>
                     <Plus size={18} style={{ marginRight: '8px' }} />
                     Log Service
                 </button>

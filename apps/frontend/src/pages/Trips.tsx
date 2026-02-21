@@ -68,7 +68,7 @@ export const Trips: React.FC = () => {
                     <h1 className="page-title">Trip Dispatching</h1>
                     <p className="page-subtitle">Coordinate vehicle routing and driver assignments</p>
                 </div>
-                <button className="btn-primary">
+                <button className="btn-primary" onClick={() => alert('Create Trip modal coming soon!')}>
                     <Plus size={18} style={{ marginRight: '8px' }} />
                     Create Trip
                 </button>
