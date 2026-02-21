@@ -9,8 +9,10 @@ datasource db {
 
 enum Role {
   ADMIN
-  FLEET_MANAGER
+  MANAGER
   DISPATCHER
+  SAFETY_OFFICER
+  FINANCIAL_ANALYST
 }
 
 enum VehicleStatus {
@@ -24,6 +26,7 @@ enum DriverStatus {
   ON_DUTY
   OFF_DUTY
   ON_TRIP
+  SUSPENDED
 }
 
 enum TripStatus {

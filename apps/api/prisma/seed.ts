@@ -30,7 +30,7 @@ async function main() {
     await prisma.rolePermission.createMany({
         data: [
             { role: 'DISPATCHER', permissionId: permDispatch.id },
-            { role: 'FLEET_MANAGER', permissionId: permFleet.id },
+            { role: 'MANAGER', permissionId: permFleet.id },
             { role: 'ADMIN', permissionId: permDispatch.id },
             { role: 'ADMIN', permissionId: permFleet.id },
         ]
@@ -41,7 +41,7 @@ async function main() {
     await prisma.user.createMany({
         data: [
             { email: 'admin@fleetflow.com', name: 'Admin Flow', password: 'password123', role: 'ADMIN' },
-            { email: 'manager@fleetflow.com', name: 'Fleet Manager', password: 'password123', role: 'FLEET_MANAGER' },
+            { email: 'manager@fleetflow.com', name: 'Fleet Manager', password: 'password123', role: 'MANAGER' },
             { email: 'dispatcher@fleetflow.com', name: 'Dave Dispatch', password: 'password123', role: 'DISPATCHER' },
         ]
     });
