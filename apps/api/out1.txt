@@ -1,0 +1,13 @@
+FAIL src/__tests__/integration/trip.test.ts
+  ÔùÅ Test suite failed to run
+
+    src/middleware/validateRequest.ts:15:97 - error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+
+    15                 res.status(400).json({ error: 'Validation failed', details: (error as ZodError).errors });
+                                                                                                       ~~~~~~
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        5.245 s
+Ran all test suites matching src/__tests__/integration/trip.test.ts.
